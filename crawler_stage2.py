@@ -2,18 +2,18 @@
 
 import os
 import re
-
 import requests
 from lxml import etree
 import random
 import datetime
-from multiprocessing import Pool, Lock
+import multiprocessing
 import json
-import pandas as pd
-from pandas import DataFrame, Series
+import pickle
+from pandas import DataFrame
 import numpy as np
+from tqdm import tqdm
 
-os.chdir(r'D:\MyDrivers\python\tbmm')
+os.chdir(r'C:\Users\zluck\Documents\Python_Scripts\爬虫\tbmm')
 headers = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'},
            {
                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'},
@@ -54,10 +54,10 @@ user['points'] = user['points'].astype('int')
 user['user_id'] = [i.split('?')[1].split('=')[1] for i in user['user_host']]
 user.sort_values(by='rank', axis=0, inplace=True)
 
-url = 'https://mm.taobao.com/self/info/model_info_show.htm?user_id={}'.format(user['user_id'][1])
 
-def GetDetailInfo(url):
+def GetDetailInfo(user_id):
     try:
+        url = 'https://mm.taobao.com/self/info/model_info_show.htm?user_id={}'.format(user_id)
         print('current url: ', url)
         r = requests.get(url, headers=random.choice(headers))
         html = r.text
@@ -104,21 +104,36 @@ def GetDetailInfo(url):
         #     return mapping[key]
 
         info = dict(zip(key, value))
+        info['user_id'] = user_id
         return json.dumps(info)
     except Exception as e:
         print(e)
         return None
 
+
 def mycallback(x):
-    with open('detailInfo.txt','a+') as f:
+    with open('detailInfo.txt', 'a') as f:
         f.write(x + '\n')
+
+
+def start_process():
+    print('Starting', multiprocessing.current_process().name)
+
 
 if __name__ == '__main__':
     print('process start...')
     start = datetime.datetime.now()
-    urls = ['https://mm.taobao.com/self/info/model_info_show.htm?user_id={}'.format(i) for i in user['user_id']]
-    with Pool(processes=4) as pool:
-        pool.map_async(GetDetailInfo,urls,callback=mycallback)
+    pool_size = multiprocessing.cpu_count()*2
+    with multiprocessing.Pool(processes=pool_size, initializer=start_process) as pool:
+        # pool.map_async(GetDetailInfo, urls, callback=mycallback)
+        pool_outputs = pool.map(GetDetailInfo, user['user_id'])
+    with open('DetailInfo2.pkl', 'wb') as f:
+        pickle.dump(pool_outputs, f)
+    # pool = multiprocessing.Pool(processes=pool_size, initializer=start_process)
+    # for i in tqdm(user['user_id']):
+    #     pool.apply_async(GetDetailInfo, args=(i,), callback=mycallback)
+    # pool.close()
+    # pool.join()
     end = datetime.datetime.now()
     timespan = end - start
     print('Success! The process takes {}'.format(timespan))
