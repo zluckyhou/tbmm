@@ -4,7 +4,7 @@ import os
 import json
 import pickle
 import pandas as pd
-from pandas import DataFrame,Series
+from pandas import DataFrame, Series
 import numpy as np
 
 os.chdir(r'D:\MyDrivers\python\tbmm')
@@ -55,5 +55,9 @@ detail = DataFrame(d)
 
 # merge basic info and detail info
 
-info = pd.merge(user,detail,on='user_id')
-info.drop(labels=['昵称','职业','所在城市','tag','域名地址:'],axis=1,inplace=True)
+info = pd.merge(user, detail, on='user_id')
+info.drop(labels=['昵称', '职业', '所在城市', 'tag', '域名地址:'], axis=1, inplace=True)
+
+# save info
+with open('info.pkl','wb') as f:
+    pickle.dump(info,f)

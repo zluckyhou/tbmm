@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+# 抓取主页详细信息
+
 import os
 import re
 import requests

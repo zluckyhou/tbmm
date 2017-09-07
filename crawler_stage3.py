@@ -52,7 +52,7 @@ def start_process():
 if __name__ == '__main__':
     print('process start...')
     start = datetime.datetime.now()
-    pool_size = multiprocessing.cpu_count()*2
+    pool_size = multiprocessing.cpu_count()
     with multiprocessing.Pool(processes=pool_size, initializer=start_process) as pool:
         # pool.map_async(GetDetailInfo, urls, callback=mycallback)
         pool_outputs = pool.map(GetContent, info['modelCard'])
