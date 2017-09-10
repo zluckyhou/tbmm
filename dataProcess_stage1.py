@@ -1,18 +1,13 @@
 # -*- coding:utf-8 -*-
 
 import os
-import re
-import requests
-from lxml import etree
-import random
-import datetime
-import multiprocessing
 import json
 import pickle
-from pandas import DataFrame
+import pandas as pd
+from pandas import DataFrame, Series
 import numpy as np
 
-os.chdir(r'C:\Users\zluck\Documents\Python_Scripts\爬虫\tbmm')
+os.chdir(r'D:\MyDrivers\python\tbmm')
 
 # read basic info
 with open('basicInfo.txt') as f:
@@ -57,11 +52,12 @@ with open('DetailInfo.pkl', 'rb') as f:
 js = [i for i in di if i]  # 过滤掉为None的元素
 d = [json.loads(i) for i in js]
 detail = DataFrame(d)
-detail['user_id'] = [re.findall('\d+',i)[0] for i in detail['modelCard']]
 
-for i in detail['modelCard']:
-    try:
-        re.findall('\d+',i)
-    except Exception as e:
-        print(e)
-        print(i)
+# merge basic info and detail info
+
+info = pd.merge(user, detail, on='user_id')
+info.drop(labels=['昵称', '职业', '所在城市', 'tag', '域名地址:'], axis=1, inplace=True)
+
+# save info
+with open('info.pkl','wb') as f:
+    pickle.dump(info,f)

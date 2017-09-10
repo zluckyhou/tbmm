@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+# 抓取主页详细信息
+
 import os
 import re
 import requests
@@ -13,7 +15,7 @@ from pandas import DataFrame
 import numpy as np
 from tqdm import tqdm
 
-os.chdir(r'C:\Users\zluck\Documents\Python_Scripts\爬虫\tbmm')
+os.chdir(r'D:\MyDrivers\python\tbmm')
 headers = [{'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'},
            {
                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'},

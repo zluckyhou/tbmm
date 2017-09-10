@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+# 抓取首页基本信息
+
 import os
 import requests
 from lxml import etree
